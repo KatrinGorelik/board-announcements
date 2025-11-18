@@ -1,20 +1,26 @@
-name: CI/CD to Render
+name: CI/CD for Static Site
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show repo files (CI demonstration)
-        run: ls -la
+      # Мінімальний CI: перевіряємо, що файл існує
+      - name: Verify index.html exists
+        run: test -f index.html
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Trigger Render Deploy Hook
         run: curl -X POST "$RENDER_DEPLOY_HOOK"
         env:
